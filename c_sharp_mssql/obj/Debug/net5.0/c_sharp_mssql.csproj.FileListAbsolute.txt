@@ -11,6 +11,7 @@ C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\bin\Debug\net5.0\runtime
 C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\bin\Debug\net5.0\runtimes\win-x86\native\sni.dll
 C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\bin\Debug\net5.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
 C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\bin\Debug\net5.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\obj\Debug\net5.0\c_sharp_mssql.csprojAssemblyReference.cache
 C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\obj\Debug\net5.0\c_sharp_mssql.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\obj\Debug\net5.0\c_sharp_mssql.AssemblyInfoInputs.cache
 C:\Users\koval\source\repos\c_sharp_mssql\c_sharp_mssql\obj\Debug\net5.0\c_sharp_mssql.AssemblyInfo.cs

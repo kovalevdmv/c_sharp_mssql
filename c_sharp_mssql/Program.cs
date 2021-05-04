@@ -14,11 +14,30 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 
     try
     {
-        // выполняем две отдельные команды
-        command.CommandText = "INSERT INTO Users (Name, Age) VALUES('Tim', 34)";
+        /*
+        command.CommandText = "create table Myfiles (id INTEGER PRIMARY KEY, pach TEXT, hash TEXT);";
         command.ExecuteNonQuery();
-        command.CommandText = "INSERT INTO Users (Name, Age) VALUES('Kat', 31)";
+        */
+
+        command.CommandText = "delete from Myfiles;";
         command.ExecuteNonQuery();
+
+        int count = 0;
+        for (int i = 1; i < 100; i++)
+        {
+            command.CommandText = @"insert into Myfiles (id,pach,hash) values (@id,@pach,@hash);";
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("@id", i);
+            command.Parameters.AddWithValue("@pach", "123");
+            command.Parameters.AddWithValue("@hash", "1234");
+            command.ExecuteNonQuery();
+            count++;
+            if (count == 1000)
+            {
+                count = 0;
+                Console.WriteLine(i);
+            }
+        }
 
         // подтверждаем транзакцию
         transaction.Commit();
