@@ -87,7 +87,7 @@ namespace c_sharp_mssql
                                     buf[1] = line;
                                 }
                                 else
-                                { // если чтрока одна или первая
+                                { // если чтрока одна или первая/
                                     buf[0] = line;
                                     if (!sr.EndOfStream)
                                         continue;
