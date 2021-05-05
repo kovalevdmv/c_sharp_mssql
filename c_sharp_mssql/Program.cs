@@ -1,7 +1,7 @@
 ﻿using System.Data.SqlClient;
 using System;
 using System.IO;
-using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace c_sharp_mssql
 {
@@ -37,7 +37,7 @@ namespace c_sharp_mssql
 
         static string getDuration(string val)
         {
-            return Convert.ToString( Convert.ToInt32(val.Split("-")[1]) / 1000000 );
+            return val.Split("-")[1];
         }
 
         static string line_proc(string line)
@@ -129,12 +129,13 @@ namespace c_sharp_mssql
                                 }
 
                                 line_all += buf[0]; // из буфера всегда брать первую строку (вторая только для проверки)
-                                if ((buf[1].ToString().Split(",").Length < 2)) continue; // если след. строка не начало строки лога, а продолжение, пропустить (она соберется в общую сторку)
+                                //if ((buf[1].ToString().Split(",").Length < 3)) continue; // если след. строка не начало строки лога, а продолжение, пропустить (она соберется в общую сторку)
+                                if (!Regex.IsMatch(buf[1], @"^\d{2}:\d{2}\.\d{6}-\d{1}")) continue; // если след. строка не начало строки лога, а продолжение, пропустить (она соберется в общую сторку)
 
                                 line_all = line_proc(line_all);
                                 line_arr = line_all.Split(",");
 
-                                if (!line_all.Contains("TLOCK")) { line_all = ""; continue; } // пропустить все кроме события TLOCK
+                                //if (!line_all.Contains("TLOCK")) { line_all = ""; continue; } // пропустить все кроме события TLOCK
 
 
                                 command.CommandText += String.Format("insert into Myfiles (id,time,Duration,event1s,SessionID,connectID,Usr,Regions,Locks,WaitConnections,Context) " +
@@ -186,10 +187,14 @@ namespace c_sharp_mssql
                 {
                     Console.WriteLine(ex.Message);
                     transaction.Rollback();
+
                 }
 
 
             }
+
+            Console.WriteLine("Загрузка завершена.");
+            Console.ReadKey();
         }
     }
 }
