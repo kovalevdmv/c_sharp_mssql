@@ -89,18 +89,18 @@ namespace c_sharp_mssql
                                     buf[1] = line;
                                 }
                                 else
-                                { // если чтрока одна или первая/
+                                { // если строка одна или первая/
                                     buf[0] = line;
                                     if (!sr.EndOfStream)
                                         continue;
                                 }
 
-                                line_all += buf[0];
-                                if ((buf[1].ToString().Split(",").Length < 2)) continue;
+                                line_all += buf[0]; // из буфера всегда брать первую строку (вторая только для проверки)
+                                if ((buf[1].ToString().Split(",").Length < 2)) continue; // если след. строка не начало строки лога, а продолжение, пропустить (она соберется в общую сторку)
 
                                 line_arr = line_all.Split(",");
 
-                                if (!line_all.Contains("TLOCK")) { line_all = ""; continue; }
+                                if (!line_all.Contains("TLOCK")) { line_all = ""; continue; } // пропустить все кроме события TLOCK
 
 
                                 command.CommandText += String.Format("insert into Myfiles (id,time,event1s,SessionID,Usr,Regions,Locks,WaitConnections,Context) " +
@@ -115,7 +115,7 @@ namespace c_sharp_mssql
                                 command.Parameters.AddWithValue(String.Format("@Locks{0}", count_line_commnd), getProp(line_all, "Locks"));
                                 command.Parameters.AddWithValue(String.Format("@WaitConnections{0}", count_line_commnd), getProp(line_all, "WaitConnections"));
                                 command.Parameters.AddWithValue(String.Format("@Context{0}", count_line_commnd), getProp(line_all, "Context"));
-                                if (count_line_commnd == 50)
+                                if (count_line_commnd == 50) // выполнять запросы пакетами по 50
                                 {
                                     command.ExecuteNonQuery();
                                     command.Parameters.Clear();
