@@ -7,21 +7,25 @@ namespace c_sharp_mssql
 {
     class Program
     {
-        public enum TLOCK
-        {
-            time = 0,
-            SessionID = 10,
-            Usr = 11,
-            Regions = 15,
-            Locks = 16,
-            WaitConnections = 17,
-            Context = 18
-        }
 
         public enum LINE
         {
             time = 0,
-            event_ = 1
+            event1s = 1,
+            SessionID = 10,
+            Usr = 11
+        }
+
+        static string getProp(string line, string name)
+        {
+            string[] line_arr = line.Split(",");
+            foreach (string i in line_arr)
+            {
+                if (i.StartsWith(name))
+                    return i;
+            }
+
+            return "";
         }
 
         static void Main(string[] args)
@@ -38,7 +42,7 @@ namespace c_sharp_mssql
                 SqlCommand command = connection.CreateCommand();
                 command.Transaction = transaction;
 
-                string[] _line;
+                string[] line_arr;
 
                 try
                 {
@@ -50,6 +54,7 @@ namespace c_sharp_mssql
 	                                        )
 	                                        create table Myfiles (id INTEGER PRIMARY KEY, 
                                             time TEXT, 
+                                            event1s TEXT, 
                                             SessionID TEXT,
                                             Usr TEXT,
                                             Regions TEXT,
@@ -71,40 +76,42 @@ namespace c_sharp_mssql
                             int ind = -1;
                             string line_all = "";
                                 
-                            string[] buf = new string[2];
+                            string[] buf = new string[2]; // буфер на две строки, чтобы можно было узнать что в следующей строке
                             while ((line = sr.ReadLine()) != null)
                             {
                                 ind++;
 
-                                if (ind > 0) {
+                                if (ind > 0) { // для последующий, сместить строки в буфере вверх и поместить в него новую строку
                                     if (ind > 1)
                                         buf[0] = buf[1];
                                     buf[1] = line;
                                 }
                                 else
-                                {
+                                { // если чтрока одна или первая
                                     buf[0] = line;
                                     if (!sr.EndOfStream)
                                         continue;
                                 }
 
                                 line_all += buf[0];
-                                if ((buf[1].ToString().Split(",").Length < 5)) continue;
+                                if ((buf[1].ToString().Split(",").Length < 2)) continue;
 
-                                _line = line_all.Split(",");
-                                if (line_all[(int)LINE.event_] != "TLOCK") continue;
-                                line_all = "";
+                                line_arr = line_all.Split(",");
+                                if (!line_all.Contains("TLOCK")) { line_all = ""; continue; }
                                 
-                                command.CommandText = @"insert into Myfiles (id,time,SessionID,Usr,Regions,Locks,WaitConnections,Context) values (@id,@time,@SessionID,@Usr,@Regions,@Locks,@WaitConnections,@Context);";
+                                
+                                command.CommandText = @"insert into Myfiles (id,time,event1s,SessionID,Usr,Regions,Locks,WaitConnections,Context) values (@id,@time,@event1s,@SessionID,@Usr,@Regions,@Locks,@WaitConnections,@Context);";
                                 command.Parameters.Clear();
                                 command.Parameters.AddWithValue("@id", ind);
-                                command.Parameters.AddWithValue("@time", );
-                                command.Parameters.AddWithValue("@SessionID", _line[(int)TLOCK.SessionID]);
-                                command.Parameters.AddWithValue("@Usr", _line[(int)TLOCK.Usr]);
-                                command.Parameters.AddWithValue("@Regions", _line[(int)TLOCK.Regions]);
-                                command.Parameters.AddWithValue("@Locks", _line[(int)TLOCK.Locks]);
-                                command.Parameters.AddWithValue("@WaitConnections", _line[(int)TLOCK.WaitConnections]);
-                                if (line_all.Contains(WithValue("@Context", _line[(int)TLOCK.Context]);
+                                command.Parameters.AddWithValue("@time", line_arr[(int)LINE.time]);
+                                command.Parameters.AddWithValue("@event1s", line_arr[(int)LINE.event1s]);
+                                command.Parameters.AddWithValue("@SessionID", line_arr[(int)LINE.SessionID]);
+                                command.Parameters.AddWithValue("@Usr", line_arr[(int)LINE.Usr]);
+                                command.Parameters.AddWithValue("@Regions", getProp(line_all, "Regions"));
+                                command.Parameters.AddWithValue("@Locks", getProp(line_all, "Locks"));
+                                command.Parameters.AddWithValue("@WaitConnections", getProp(line_all, "WaitConnections"));
+                                command.Parameters.AddWithValue("@Context", getProp(line_all,"Context"));
+                                line_all = "";
                                 command.ExecuteNonQuery();
 
                               count++;
